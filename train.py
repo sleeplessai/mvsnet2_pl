@@ -196,6 +196,7 @@ if __name__ == '__main__':
                       weights_summary=None,
                       gpus=hparams.num_gpus,
                       distributed_backend='ddp' if hparams.num_gpus>1 else None,
+                      replace_sampler_ddp=False,
                       num_sanity_val_steps=0 if hparams.num_gpus>1 else 5,
                       use_amp=hparams.use_amp,
                       amp_level='O1')
