@@ -9,7 +9,6 @@ from datasets.dtu import DTUDataset
 # models
 from models.mvsnet import MVSNet
 from models.modules import NormABN
-# from inplace_abn import InPlaceABN
 
 from torchvision import transforms as T
 
@@ -26,7 +25,7 @@ from metrics import *
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning import Trainer
-from pytorch_lightning.logging import TestTubeLogger
+from pytorch_lightning.loggers import TestTubeLogger
 
 torch.backends.cudnn.benchmark = True # this increases training speed by 5x
 
@@ -137,7 +136,6 @@ class MVSSystem(pl.LightningModule):
 
         return [self.optimizer], [scheduler]
 
-    @pl.data_loader
     def train_dataloader(self):
         train_dataset = DTUDataset(root_dir=self.hparams.root_dir,
                                    split='train',
@@ -155,7 +153,6 @@ class MVSSystem(pl.LightningModule):
                           batch_size=self.hparams.batch_size,
                           pin_memory=True)
 
-    @pl.data_loader
     def val_dataloader(self):
         val_dataset = DTUDataset(root_dir=self.hparams.root_dir,
                                  split='val',
@@ -195,10 +192,9 @@ if __name__ == '__main__':
                       early_stop_callback=None,
                       weights_summary=None,
                       gpus=hparams.num_gpus,
-                      distributed_backend='ddp' if hparams.num_gpus>1 else None,
+                      sync_batchnorm=hparams.sync_bn,
+                      distributed_backend='ddp' if hparams.num_gpus > 1 else None,
                       replace_sampler_ddp=False,
-                      num_sanity_val_steps=0 if hparams.num_gpus>1 else 5,
-                      use_amp=hparams.use_amp,
-                      amp_level='O1')
+                      num_sanity_val_steps=0 if hparams.num_gpus > 1 else 5)
 
     trainer.fit(system)

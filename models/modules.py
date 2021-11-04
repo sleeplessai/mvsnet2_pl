@@ -1,10 +1,8 @@
 import torch
 from torch import nn
 import torch.nn.functional as F
-# from inplace_abn import InPlaceABN
 from kornia.utils import create_meshgrid
 from torch.nn.modules import conv
-
 
 class NormABN(nn.Module):
     def __init__(self, conv_type, num_features):
@@ -12,14 +10,13 @@ class NormABN(nn.Module):
         super(NormABN, self).__init__()
         if conv_type == "conv2d":
             self.norm = nn.BatchNorm2d(num_features)
-            self.act = nn.ReLU()
+            self.act = nn.ReLU(inplace=True)
         elif conv_type == "conv3d":
             self.norm = nn.BatchNorm3d(num_features)
-            self.act = nn.ReLU()
+            self.act = nn.ReLU(inplace=True)
 
     def forward(self, x):
         return self.act(self.norm(x))
-
 
 class ConvBnReLU(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, pad=1, norm_act=NormABN):
