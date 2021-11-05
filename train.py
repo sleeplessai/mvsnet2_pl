@@ -26,6 +26,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import TestTubeLogger
+from pytorch_lightning.overrides.data_parallel import LightningDistributedDataParallel
 
 torch.backends.cudnn.benchmark = True # this increases training speed by 5x
 
@@ -170,6 +171,11 @@ class MVSSystem(pl.LightningModule):
                           batch_size=self.hparams.batch_size,
                           pin_memory=True)
 
+    def configure_ddp(self, model, device_ids):
+        return LightningDistributedDataParallel(model,
+                                                device_ids=device_ids,
+                                                find_unused_parameters=False)
+
 if __name__ == '__main__':
     hparams = get_opts()
     system = MVSSystem(hparams)
@@ -192,7 +198,7 @@ if __name__ == '__main__':
                       early_stop_callback=None,
                       weights_summary=None,
                       gpus=hparams.num_gpus,
-                      sync_batchnorm=hparams.sync_bn,
+                      sync_batchnorm=hparams.sync_bn and hparams.num_gpus > 1,
                       distributed_backend='ddp' if hparams.num_gpus > 1 else None,
                       replace_sampler_ddp=False,
                       num_sanity_val_steps=0 if hparams.num_gpus > 1 else 5)
