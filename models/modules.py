@@ -2,7 +2,6 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from kornia.utils import create_meshgrid
-from torch.nn.modules import conv
 
 class NormABN(nn.Module):
     def __init__(self, conv_type, num_features):
