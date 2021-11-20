@@ -8,7 +8,7 @@ from datasets.dtu import DTUDataset
 
 # models
 from models.mvsnet import MVSNet
-from models.modules import NormABN
+from models.modules import NormAct
 
 from torchvision import transforms as T
 
@@ -40,7 +40,7 @@ class MVSSystem(pl.LightningModule):
 
         self.loss = loss_dict[hparams.loss_type](ohem=True, topk=0.6)
 
-        self.model = MVSNet(NormABN)
+        self.model = MVSNet(NormAct)
 
         # if num gpu is 1, print model structure and number of params
         if self.hparams.num_gpus == 1:

@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from .modules import *
 
 class FeatureNet(nn.Module):
-    def __init__(self, norm_act=NormABN):
+    def __init__(self, norm_act=NormAct):
         super(FeatureNet, self).__init__()
         self.inplanes = 32
 
@@ -26,7 +26,7 @@ class FeatureNet(nn.Module):
         return x
 
 class CostRegNet(nn.Module):
-    def __init__(self, norm_act=NormABN):
+    def __init__(self, norm_act=NormAct):
         super(CostRegNet, self).__init__()
         self.conv0 = ConvBnReLU3D(32, 8, norm_act=norm_act)
 
@@ -68,7 +68,7 @@ class CostRegNet(nn.Module):
         return x
 
 class MVSNet(nn.Module):
-    def __init__(self, norm_act=NormABN):
+    def __init__(self, norm_act=NormAct):
         super(MVSNet, self).__init__()
         self.feature = FeatureNet(norm_act)
         self.cost_regularization = CostRegNet(norm_act)

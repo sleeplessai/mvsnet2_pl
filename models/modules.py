@@ -3,10 +3,10 @@ from torch import nn
 import torch.nn.functional as F
 from kornia.utils import create_meshgrid
 
-class NormABN(nn.Module):
+class NormAct(nn.Module):
     def __init__(self, conv_type, num_features):
         assert conv_type in ["conv2d", "conv3d"]
-        super(NormABN, self).__init__()
+        super(NormAct, self).__init__()
         if conv_type == "conv2d":
             self.norm = nn.BatchNorm2d(num_features)
             self.act = nn.ReLU(inplace=True)
@@ -18,7 +18,7 @@ class NormABN(nn.Module):
         return self.act(self.norm(x))
 
 class ConvBnReLU(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, pad=1, norm_act=NormABN):
+    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, pad=1, norm_act=NormAct):
         super(ConvBnReLU, self).__init__()
         self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride=stride, padding=pad, bias=False)
         self.bn = norm_act("conv2d", out_channels)
@@ -27,7 +27,7 @@ class ConvBnReLU(nn.Module):
         return self.bn(self.conv(x))
 
 class ConvBnReLU3D(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, pad=1, norm_act=NormABN):
+    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, pad=1, norm_act=NormAct):
         super(ConvBnReLU3D, self).__init__()
         self.conv = nn.Conv3d(in_channels, out_channels, kernel_size, stride=stride, padding=pad, bias=False)
         self.bn = norm_act("conv3d", out_channels)
